@@ -10,7 +10,7 @@ st.title('**Youtube Data Scraping and Harvesting**')
 @st.cache_data
 def youtube_authenticate():
     return googleapiclient.discovery.build(
-        "youtube", "v3", developerKey='AIzaSyAo7roL9ynteE--sIxPJ7BfYz1-am2Yk4s')
+        "youtube", "v3", developerKey='your-api-key')
 
 # function to extract channel details
 @st.cache_data
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     if st.button(":green[Scrape Data]"):
 
         st.write("Processing...")
-        client = pymongo.MongoClient('mongodb://localhost:27017')
+        client = pymongo.MongoClient(' your mongoDb address')
 
         # Sending a ping to confirm a successful connection
         try:
@@ -414,10 +414,10 @@ if __name__ == "__main__":
         from mysql.connector import Error
 
         try:
-            mydb = mysql.connector.connect(host="localhost",
-                                           database='yt2',
-                                           user="root",
-                                           password="9035584074",
+            mydb = mysql.connector.connect(host="hostname",
+                                           database='dbname',
+                                           user="username",
+                                           password="password",
                                            port=3306)
             if mydb.is_connected():
                 db_Info = mydb.get_server_info()
@@ -477,11 +477,11 @@ if __name__ == "__main__":
 st.title(":red[Data Analysis]")
 if __name__ == "__main__":
     try:
-        mydb = mysql.connector.connect(host="localhost",
-                                       database='yt2',
-                                       user="root",
-                                       password="9035584074",
-                                       port=3306)
+        mydb = mysql.connector.connect(host="hostname",
+                                           database='dbname',
+                                           user="username",
+                                           password="password",
+                                           port=3306)
         if mydb.is_connected():
             db_Info = mydb.get_server_info()
             st.write()
