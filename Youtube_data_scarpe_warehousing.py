@@ -2,15 +2,31 @@ import googleapiclient.discovery
 import mysql.connector
 from mysql.connector import Error
 import streamlit as st
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 import pandas as pd
 import pymongo
 
-st.title('**Youtube Data Scraping and Harvesting**')
+st.set_page_config(page_title='Youtube', page_icon = 'YouTube.png')
+page_bg_img = """
+<style>
+[data-testid="stAppViewContainer"] {
+background-image: url("https://img.myloview.com/stickers/marble-granite-white-background-wall-surface-black-pattern-graphic-abstract-light-elegant-gray-for-do-floor-ceramic-counter-texture-stone-slab-smooth-tile-silver-natural-for-interior-decoration-700-220832650.jpg");
+background-size: cover;
+}
+
+</style>
+"""
+
+st.markdown(page_bg_img, unsafe_allow_html=True)
+st.title(':violet[Youtube Data Scraping And Harvesting]')
+
+
 #  function to connect to youtube api
 @st.cache_data
 def youtube_authenticate():
     return googleapiclient.discovery.build(
-        "youtube", "v3", developerKey='your-api-key')
+        "youtube", "v3", developerKey='AIzaSyAo7roL9ynteE--sIxPJ7BfYz1-am2Yk4s')
 
 # function to extract channel details
 @st.cache_data
@@ -173,15 +189,20 @@ if __name__ == "__main__":
     video_details = {}
     comment_details = {}
 
-    st.title(':red[Data Scrapping]')
-    number = st.number_input(':blue[Enter the number of channels]', value=1, min_value=1,
+    st.header(':red[Data Scrapping]')
+    number = st.number_input('**Enter the number of channels**', value=1, min_value=1,
                                      max_value=10)
     for i in range(number):
-        user_input_channel_ids.append(st.text_input(":blue[Enter the ChannelID]", key=i))
+        user_input_channel_ids.append(st.text_input("**Enter the ChannelID**", key=i))
     if st.button(":green[Scrape Data]"):
 
         st.write("Processing...")
-        client = pymongo.MongoClient(' your mongoDb address')
+        url = "mongodb+srv://rakeshslrocky:QXFWAHJGe8Oz2RGx@cluster0.kbxkwph.mongodb.net/?retryWrites=true&w=majority"
+
+        # Create a new client and connect to the server
+        client = MongoClient(url, server_api=ServerApi('1'))
+
+        # client = pymongo.MongoClient('mongodb://localhost:27017')
 
         # Sending a ping to confirm a successful connection
         try:
@@ -209,11 +230,11 @@ if __name__ == "__main__":
 
         st.write(":green[Completed successfully.]")
     else:
-        st.write("click on 'Scare Data' to get data and store to MongoDB")
+        st.write("click on 'Scare Data' to get data")
 
 
 # codes to migrate data from MongoDB to SQL
-st.title(':red[**Data Migration**]')
+st.header(':red[Data Migration]')
 import streamlit as st
 import pandas as pd
 from pymongo.mongo_client import MongoClient
@@ -254,16 +275,18 @@ def convert_duration(each_item):
 
 if __name__ == "__main__":
 
+    url = "mongodb+srv://rakeshslrocky:QXFWAHJGe8Oz2RGx@cluster0.kbxkwph.mongodb.net/?retryWrites=true&w=majority"
 
     # Create a new client and connect to the server
-    client = pymongo.MongoClient('mongodb://localhost:27017')
+    client = MongoClient(url, server_api=ServerApi('1'))
+    # Create a new client and connect to the server
+    # client = pymongo.MongoClient('mongodb://localhost:27017')
     # Send a ping to confirm a successful connection
     try:
         client.admin.command('ping')
-        st.write("Pinged your deployment. You successfully connected to MongoDB!")
+        st.write(":green[You successfully connected to MongoDB!]")
     except Exception as e:
         st.write(e)
-    st.write("Retriving Data from Mongo DB for Transformation...")
 
     yt_dbs = client['yt_dbs']
 
@@ -350,9 +373,9 @@ if __name__ == "__main__":
 
     for each_ch_name in channels_df['channelTitle']:  # to find the channel names from mongo db
         dropdown.append(each_ch_name)
-
-    options = st.multiselect(  # create a dropdown of channels searched in streamlit
-        'which of these channels do you like to work on?',
+    # creating a dropdown
+    options = st.multiselect(
+        '**Select the channels which you want see details and load to SQL**',
         tuple(dropdown))
 
     # if st.button('channels chosen from dropdown'):
@@ -391,33 +414,33 @@ if __name__ == "__main__":
         for each_v_id in set(SQL_video_df['videoId']):
             SQL_comments_df = pd.concat([SQL_comments_df, comment_df[comment_df['videoId'] == each_v_id]])
 
-    SQL_channel_details_df.reset_index(inplace=True, drop=True)
-    SQL_plalist_df.reset_index(inplace=True, drop=True)
-    SQL_video_df = SQL_video_df.drop_duplicates(subset=['videoId'])
-    SQL_video_df.reset_index(inplace=True, drop=True)
-    SQL_comments_df = SQL_comments_df.drop_duplicates(subset=['commentId'])
-    SQL_comments_df.reset_index(inplace=True, drop=True)
+        SQL_channel_details_df.reset_index(inplace=True, drop=True)
+        SQL_plalist_df.reset_index(inplace=True, drop=True)
+        SQL_video_df = SQL_video_df.drop_duplicates(subset=['videoId'])
+        SQL_video_df.reset_index(inplace=True, drop=True)
+        SQL_comments_df = SQL_comments_df.drop_duplicates(subset=['commentId'])
+        SQL_comments_df.reset_index(inplace=True, drop=True)
 
-    st.header(":blue[Channel Details]")
-    st.dataframe(SQL_channel_details_df)
-    st.header(":blue[Playlist Details]")
-    st.dataframe(SQL_plalist_df)
-    st.header(":blue[Video Details]")
-    st.dataframe(SQL_video_df)
-    st.header(":blue[Comments Details]")
-    st.dataframe(SQL_comments_df)
+        st.header(":blue[Channel Details]")
+        st.dataframe(SQL_channel_details_df)
+        st.header(":blue[Playlist Details]")
+        st.dataframe(SQL_plalist_df)
+        st.header(":blue[Video Details]")
+        st.dataframe(SQL_video_df)
+        st.header(":blue[Comments Details]")
+        st.dataframe(SQL_comments_df)
 
 
-    if st.button("Load to SQL database"):
+    if st.button(":green[Load to SQL database]"):
 
         import mysql.connector
         from mysql.connector import Error
 
         try:
-            mydb = mysql.connector.connect(host="hostname",
-                                           database='dbname',
-                                           user="username",
-                                           password="password",
+            mydb = mysql.connector.connect(host="localhost",
+                                           database='yt2',
+                                           user="root",
+                                           password="9035584074",
                                            port=3306)
             if mydb.is_connected():
                 db_Info = mydb.get_server_info()
@@ -471,25 +494,25 @@ if __name__ == "__main__":
         except Error as e:
             st.write("Error while connecting to MySQL", e)
 
-    st.write(":red[click 'Load to SQL database' to load the filtered data]")
+    st.write("click 'Load to SQL database' to load the filtered data")
 
 # codes for answering all the questions
 st.title(":red[Data Analysis]")
 if __name__ == "__main__":
     try:
-        mydb = mysql.connector.connect(host="hostname",
-                                           database='dbname',
-                                           user="username",
-                                           password="password",
-                                           port=3306)
+        mydb = mysql.connector.connect(host="localhost",
+                                       database='yt2',
+                                       user="root",
+                                       password="9035584074",
+                                       port=3306)
         if mydb.is_connected():
             db_Info = mydb.get_server_info()
             st.write()
             cursor = mydb.cursor()
             cursor.execute("select database();")
             record = cursor.fetchone()
-            st.write("Connected to MySQL Server version :", db_Info , "Database is :", record)
-            SQL_question = st.selectbox(':blue[Select your Question from dropdown]',
+            st.write(":green[Connected to MySQL Server version :]", db_Info , ":green[Database is :]", record)
+            SQL_question = st.selectbox('**Select your Question from dropdown**',
                                         ('',
                                          '1. What are the names of all the videos and their corresponding channels?',
                                          '2. Which channels have the most number of videos, and how many videos do they have?',
