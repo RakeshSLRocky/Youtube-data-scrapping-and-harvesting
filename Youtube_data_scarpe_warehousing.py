@@ -26,7 +26,7 @@ st.title(':violet[Youtube Data Scraping And Harvesting]')
 @st.cache_data
 def youtube_authenticate():
     return googleapiclient.discovery.build(
-        "youtube", "v3", developerKey='AIzaSyAo7roL9ynteE--sIxPJ7BfYz1-am2Yk4s')
+        "youtube", "v3", developerKey='your api key')
 
 # function to extract channel details
 @st.cache_data
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     if st.button(":green[Scrape Data]"):
 
         st.write("Processing...")
-        url = "mongodb+srv://rakeshslrocky:QXFWAHJGe8Oz2RGx@cluster0.kbxkwph.mongodb.net/?retryWrites=true&w=majority"
+        url = "enter your Mongodb atlas connect url"
 
         # Create a new client and connect to the server
         client = MongoClient(url, server_api=ServerApi('1'))
@@ -275,7 +275,7 @@ def convert_duration(each_item):
 
 if __name__ == "__main__":
 
-    url = "mongodb+srv://rakeshslrocky:QXFWAHJGe8Oz2RGx@cluster0.kbxkwph.mongodb.net/?retryWrites=true&w=majority"
+    url = "enter your Mongodb atlas connect url "
 
     # Create a new client and connect to the server
     client = MongoClient(url, server_api=ServerApi('1'))
@@ -437,10 +437,10 @@ if __name__ == "__main__":
         from mysql.connector import Error
 
         try:
-            mydb = mysql.connector.connect(host="localhost",
-                                           database='yt2',
-                                           user="root",
-                                           password="9035584074",
+            mydb = mysql.connector.connect(host="host name",
+                                           database='database name',
+                                           user="user name",
+                                           password="password",
                                            port=3306)
             if mydb.is_connected():
                 db_Info = mydb.get_server_info()
@@ -500,10 +500,10 @@ if __name__ == "__main__":
 st.title(":red[Data Analysis]")
 if __name__ == "__main__":
     try:
-        mydb = mysql.connector.connect(host="localhost",
-                                       database='yt2',
-                                       user="root",
-                                       password="9035584074",
+        mydb = mysql.connector.connect(host="host name",
+                                       database='database name',
+                                       user="username",
+                                       password="password",
                                        port=3306)
         if mydb.is_connected():
             db_Info = mydb.get_server_info()
